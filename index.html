@@ -1030,29 +1030,73 @@
       });
     })();
 
-form.addEventListener('submit', async (e) => {
-  e.preventDefault();
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Contact Form</title>
+</head>
+<body>
 
-  const name = document.getElementById('contact-name').value;
-  const email = document.getElementById('contact-email').value;
-  const message = document.getElementById('contact-message').value;
+  <h2>Contact Me</h2>
 
-  try {
-    await push(ref(db, 'contacts'), {
-      name,
-      email,
-      message,
-      createdAt: new Date().toISOString()
+  <!-- ✅ FORM -->
+  <form id="contact-form">
+    <input type="text" name="name" placeholder="Your Name" required><br><br>
+    <input type="email" name="email" placeholder="Your Email" required><br><br>
+    <textarea name="message" placeholder="Your Message" required></textarea><br><br>
+    <button type="submit">Send</button>
+  </form>
+
+  <p id="status"></p>
+
+  <!-- ✅ FIREBASE (COMPAT VERSION - IMPORTANT) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
+  <script>
+    // ✅ YOUR FIREBASE CONFIG (REPLACE THIS)
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "portfolio-a59a8.firebaseapp.com",
+      databaseURL: "https://portfolio-a59a8-default-rtdb.firebaseio.com",
+      projectId: "portfolio-a59a8",
+    };
+
+    // ✅ INIT
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // ✅ FORM LOGIC
+    const form = document.getElementById("contact-form");
+    const status = document.getElementById("status");
+
+    form.addEventListener("submit", function(e) {
+      e.preventDefault(); // 🔥 STOP PAGE RELOAD
+
+      const name = form["name"].value;
+      const email = form["email"].value;
+      const message = form["message"].value;
+
+      db.ref("contacts").push({
+        name: name,
+        email: email,
+        message: message,
+        createdAt: new Date().toISOString()
+      })
+      .then(() => {
+        status.innerText = "✅ Message sent successfully!";
+        form.reset();
+      })
+      .catch((error) => {
+        status.innerText = "❌ Error: " + error.message;
+        console.error(error);
+      });
     });
+  </script>
 
-    alert("Message sent ✅");
-    form.reset();
-
-  } catch (error) {
-    console.error(error);
-    alert("Error ❌: " + error.message);
-  }
-});
+</body>
+</html>
 </script>
 </body>
 </html>
