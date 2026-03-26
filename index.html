@@ -1030,69 +1030,56 @@
       });
     })();
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Contact Form</title>
-</head>
-<body>
 
-  <h2>Contact Me</h2>
+<!-- ✅ FIREBASE (MODULAR VERSION - CORRECT WAY) -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+  import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js";
 
-  <!-- ✅ FORM -->
-  <form id="contact-form">
-    <input type="text" name="name" placeholder="Your Name" required><br><br>
-    <input type="email" name="email" placeholder="Your Email" required><br><br>
-    <textarea name="message" placeholder="Your Message" required></textarea><br><br>
-    <button type="submit">Send</button>
-  </form>
+  // ✅ YOUR CONFIG (FIXED)
+  const firebaseConfig = {
+    apiKey: "AIzaSyA26tVKb_ZviJKBdcx632Dfizs66pQrCFo",
+    authDomain: "portfolio-a59a8.firebaseapp.com",
+    databaseURL: "https://portfolio-a59a8-default-rtdb.firebaseio.com",
+    projectId: "portfolio-a59a8",
+    storageBucket: "portfolio-a59a8.firebasestorage.app",
+    messagingSenderId: "726253299230",
+    appId: "1:726253299230:web:fc6fba9f0f077e4f6c300f",
+    measurementId: "G-YSVWNSWR5V"
+  };
 
-  <p id="status"></p>
+  // ✅ INIT
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
 
-  <!-- ✅ FIREBASE (COMPAT VERSION - IMPORTANT) -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+  // ✅ FORM LOGIC
+  const form = document.getElementById("contact-form");
+  const status = document.getElementById("contact-status");
 
-  <script>
-    // ✅ YOUR FIREBASE CONFIG (REPLACE THIS)
-    const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "portfolio-a59a8.firebaseapp.com",
-      databaseURL: "https://portfolio-a59a8-default-rtdb.firebaseio.com",
-      projectId: "portfolio-a59a8",
-    };
+  form.addEventListener("submit", (e) => {
+    e.preventDefault(); // 🔥 stops page reload
 
-    // ✅ INIT
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+    const name = form.name.value;
+    const email = form.email.value;
+    const message = form.message.value;
 
-    // ✅ FORM LOGIC
-    const form = document.getElementById("contact-form");
-    const status = document.getElementById("status");
-
-    form.addEventListener("submit", function(e) {
-      e.preventDefault(); // 🔥 STOP PAGE RELOAD
-
-      const name = form["name"].value;
-      const email = form["email"].value;
-      const message = form["message"].value;
-
-      db.ref("contacts").push({
-        name: name,
-        email: email,
-        message: message,
-        createdAt: new Date().toISOString()
-      })
-      .then(() => {
-        status.innerText = "✅ Message sent successfully!";
-        form.reset();
-      })
-      .catch((error) => {
-        status.innerText = "❌ Error: " + error.message;
-        console.error(error);
-      });
+    push(ref(db, "contacts"), {
+      name,
+      email,
+      message,
+      createdAt: new Date().toISOString()
+    })
+    .then(() => {
+      status.innerText = "✅ Message sent!";
+      form.reset();
+    })
+    .catch((error) => {
+      status.innerText = "❌ Failed: " + error.message;
+      console.error(error);
     });
+  });
+</script>
+
   </script>
 
 </body>
